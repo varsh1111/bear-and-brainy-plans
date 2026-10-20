@@ -1,0 +1,4 @@
+- [ ] Dashboard today's tasks
+- [ ] Edit subjects
+- [ ] Assignment priorities + tracker page
+- [ ] My Progress page: study hours + charts
