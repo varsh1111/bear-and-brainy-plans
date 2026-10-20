@@ -7,9 +7,9 @@ import { AssignmentRow, AddAssignmentForm } from "@/components/AssignmentList";
 export const Route = createFileRoute("/subjects/$id")({
   head: () => ({
     meta: [
-      { title: "Subject — StudyNest Study Planner" },
+      { title: "Subject — Study Space Study Planner" },
       { name: "description", content: "Manage assignments and track progress for this subject." },
-      { property: "og:title", content: "Subject — StudyNest Study Planner" },
+      { property: "og:title", content: "Subject — Study Space Study Planner" },
       { property: "og:description", content: "Manage assignments and track progress for this subject." },
     ],
   }),

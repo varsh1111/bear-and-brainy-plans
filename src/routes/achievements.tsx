@@ -5,9 +5,9 @@ import { usePlanner, getAchievements } from "@/lib/planner";
 export const Route = createFileRoute("/achievements")({
   head: () => ({
     meta: [
-      { title: "Achievements — StudyNest Study Planner" },
+      { title: "Achievements — Study Space Study Planner" },
       { name: "description", content: "Unlock badges as you complete assignments and stay motivated." },
-      { property: "og:title", content: "Achievements — StudyNest Study Planner" },
+      { property: "og:title", content: "Achievements — Study Space Study Planner" },
       { property: "og:description", content: "Unlock badges as you complete assignments and stay motivated." },
     ],
   }),

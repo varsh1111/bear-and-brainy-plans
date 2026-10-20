@@ -10,9 +10,9 @@ import { AddSubjectDialog } from "@/components/AddSubjectDialog";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — StudyNest Study Planner" },
+      { title: "Dashboard — Study Space Study Planner" },
       { name: "description", content: "See your subjects, progress, and upcoming deadlines at a glance." },
-      { property: "og:title", content: "Dashboard — StudyNest Study Planner" },
+      { property: "og:title", content: "Dashboard — Study Space Study Planner" },
       { property: "og:description", content: "See your subjects, progress, and upcoming deadlines at a glance." },
     ],
   }),

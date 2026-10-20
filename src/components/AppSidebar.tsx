@@ -1,5 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { LayoutDashboard, Trophy, Plus, GraduationCap } from "lucide-react";
+import logo from "@/assets/logo.png";
+import { LayoutDashboard, Trophy, Plus } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarHeader, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, useSidebar,
@@ -17,10 +18,10 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-3">
-          <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-            <GraduationCap className="size-5" />
+          <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-sidebar-foreground p-0.5">
+            <img src={logo} alt="Study Space bear logo" width={1024} height={1024} className="size-full object-contain" />
           </div>
-          {!collapsed && <span className="font-display text-lg font-bold">StudyNest</span>}
+          {!collapsed && <span className="font-display text-lg font-bold">Study Space</span>}
         </div>
       </SidebarHeader>
       <SidebarContent>
