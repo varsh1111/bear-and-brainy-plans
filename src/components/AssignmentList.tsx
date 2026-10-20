@@ -37,7 +37,8 @@ export function AddAssignmentForm({ subjectId }: { subjectId?: string }) {
   const [title, setTitle] = useState("");
   const [due, setDue] = useState(new Date().toISOString().slice(0, 10));
   const [sid, setSid] = useState(subjectId ?? subjects[0]?.id ?? "");
-  const target = subjectId ?? sid;
+  const validSid = subjects.some((s) => s.id === sid) ? sid : subjects[0]?.id ?? "";
+  const target = subjectId ?? validSid;
   return (
     <form
       className="flex flex-wrap gap-2"
@@ -50,7 +51,7 @@ export function AddAssignmentForm({ subjectId }: { subjectId?: string }) {
     >
       <Input className="min-w-48 flex-1" placeholder="New assignment or deadline…" value={title} onChange={(e) => setTitle(e.target.value)} />
       {!subjectId && (
-        <Select value={sid} onValueChange={setSid}>
+        <Select value={validSid} onValueChange={setSid}>
           <SelectTrigger className="w-40"><SelectValue placeholder="Subject" /></SelectTrigger>
           <SelectContent>
             {subjects.map((s) => <SelectItem key={s.id} value={s.id}>{s.emoji} {s.name}</SelectItem>)}
