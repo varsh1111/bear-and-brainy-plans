@@ -36,14 +36,14 @@ function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <section className="bg-hero rounded-3xl p-8 text-primary-foreground shadow-soft">
-        <p className="text-sm opacity-80">Welcome back 👋</p>
+      <section className="bg-hero rounded-3xl p-8 text-foreground shadow-soft">
+        <p className="text-sm text-muted-foreground">Welcome back 👋</p>
         <h1 className="mt-1 text-3xl font-bold md:text-4xl">
           {soon.length ? `You have ${soon.length} deadline${soon.length > 1 ? "s" : ""} coming up` : "You're all caught up!"}
         </h1>
         <div className="mt-6 max-w-md">
           <div className="mb-2 flex justify-between text-sm"><span>Overall progress</span><span className="font-bold">{overall}%</span></div>
-          <Progress value={overall} className="h-3 bg-primary-foreground/20 [&>div]:bg-sidebar-primary" />
+          <Progress value={overall} className="h-3 bg-card/60 [&>div]:bg-accent" />
         </div>
       </section>
 

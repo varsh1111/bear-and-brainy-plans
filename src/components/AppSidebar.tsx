@@ -18,7 +18,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <div className="flex items-center gap-2 px-2 py-3">
-          <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-sidebar-foreground p-0.5">
+          <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-card p-0.5 shadow-soft">
             <img src={logo} alt="Study Space bear logo" width={1024} height={1024} className="size-full object-contain" />
           </div>
           {!collapsed && <span className="font-display text-lg font-bold">Study Space</span>}
