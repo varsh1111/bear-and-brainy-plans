@@ -10,6 +10,9 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
+import { PlannerProvider } from "@/lib/planner";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
@@ -78,11 +81,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "StudyNest — Study Planner" },
+      { name: "description", content: "Organize subjects, manage assignments, track progress and stay motivated." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@Lovable" },
@@ -92,6 +92,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Nunito+Sans:wght@400;600;700&display=swap" },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
   }),
@@ -121,7 +123,22 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <PlannerProvider>
+        <SidebarProvider>
+          <div className="flex min-h-screen w-full">
+            <AppSidebar />
+            <div className="flex flex-1 flex-col">
+              <header className="flex h-14 items-center gap-2 border-b px-4">
+                <SidebarTrigger />
+                <span className="text-sm text-muted-foreground">Study Planner</span>
+              </header>
+              <main className="mx-auto w-full max-w-6xl flex-1 p-6 md:p-8">
+                <Outlet />
+              </main>
+            </div>
+          </div>
+        </SidebarProvider>
+      </PlannerProvider>
     </QueryClientProvider>
   );
 }
