@@ -1,14 +1,16 @@
-# Welcome to your Lovable project
+# Bear And Brainy Plans
+
+can you make a study planner that is easy to use. Where you have a dashboard that shows how many subjects and your progresses and reminders of assignments and deadlines. I also need a sidebar for all the subjects and also i need a place where i can add more subjects and also achiements. This is to help students organiza their subjects, manage assignments, track their progress and stay motivated. make sidebars with the subjects and design it how you would to make it user friendly
 
 This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/b7bb0b85-d659-4024-a353-56ec79d4c3ce).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +22,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
