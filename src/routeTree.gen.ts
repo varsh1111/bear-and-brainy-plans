@@ -11,6 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AchievementsRouteImport } from './routes/achievements'
+import { Route as CalendarRouteImport } from './routes/calendar'
+import { Route as ProgressRouteImport } from './routes/progress'
+import { Route as ReportRouteImport } from './routes/report'
 import { Route as SubjectsIdRouteImport } from './routes/subjects.$id'
 
 const IndexRoute = IndexRouteImport.update({
@@ -23,6 +26,21 @@ const AchievementsRoute = AchievementsRouteImport.update({
   path: '/achievements',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CalendarRoute = CalendarRouteImport.update({
+  id: '/calendar',
+  path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgressRoute = ProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReportRoute = ReportRouteImport.update({
+  id: '/report',
+  path: '/report',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SubjectsIdRoute = SubjectsIdRouteImport.update({
   id: '/subjects/$id',
   path: '/subjects/$id',
@@ -32,30 +50,61 @@ const SubjectsIdRoute = SubjectsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/achievements': typeof AchievementsRoute
+  '/calendar': typeof CalendarRoute
+  '/progress': typeof ProgressRoute
+  '/report': typeof ReportRoute
   '/subjects/$id': typeof SubjectsIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/achievements': typeof AchievementsRoute
+  '/calendar': typeof CalendarRoute
+  '/progress': typeof ProgressRoute
+  '/report': typeof ReportRoute
   '/subjects/$id': typeof SubjectsIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/achievements': typeof AchievementsRoute
+  '/calendar': typeof CalendarRoute
+  '/progress': typeof ProgressRoute
+  '/report': typeof ReportRoute
   '/subjects/$id': typeof SubjectsIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/achievements' | '/subjects/$id'
+  fullPaths:
+    | '/'
+    | '/achievements'
+    | '/calendar'
+    | '/progress'
+    | '/report'
+    | '/subjects/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/achievements' | '/subjects/$id'
-  id: '__root__' | '/' | '/achievements' | '/subjects/$id'
+  to:
+    | '/'
+    | '/achievements'
+    | '/calendar'
+    | '/progress'
+    | '/report'
+    | '/subjects/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/achievements'
+    | '/calendar'
+    | '/progress'
+    | '/report'
+    | '/subjects/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AchievementsRoute: typeof AchievementsRoute
+  CalendarRoute: typeof CalendarRoute
+  ProgressRoute: typeof ProgressRoute
+  ReportRoute: typeof ReportRoute
   SubjectsIdRoute: typeof SubjectsIdRoute
 }
 
@@ -75,6 +124,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AchievementsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/calendar': {
+      id: '/calendar'
+      path: '/calendar'
+      fullPath: '/calendar'
+      preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/progress': {
+      id: '/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof ProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/report': {
+      id: '/report'
+      path: '/report'
+      fullPath: '/report'
+      preLoaderRoute: typeof ReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/subjects/$id': {
       id: '/subjects/$id'
       path: '/subjects/$id'
@@ -88,6 +158,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AchievementsRoute: AchievementsRoute,
+  CalendarRoute: CalendarRoute,
+  ProgressRoute: ProgressRoute,
+  ReportRoute: ReportRoute,
   SubjectsIdRoute: SubjectsIdRoute,
 }
 export const routeTree = rootRouteImport
