@@ -1,14 +1,17 @@
+import { dateKey, type StudySession, type StudyGoals, type Exam, type TopicStatus } from "./study";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-export type Subject = { id: string; name: string; emoji: string; color: number };
+export type Subject = { id: string; name: string; emoji: string; color: number; targetHours?: number };
 export type Assignment = {
   id: string;
   subjectId: string;
   title: string;
   due: string; // yyyy-mm-dd
   done: boolean;
+  priority?: "low" | "medium" | "high";
+  completedAt?: string;
 };
-type State = { subjects: Subject[]; assignments: Assignment[] };
+export type State = { subjects: Subject[]; assignments: Assignment[]; sessions: StudySession[]; goals: StudyGoals; exams: Exam[] };
 
 export const SUBJECT_COLORS = 6;
 export const subjectColor = (c: number) => `var(--chart-${(c % SUBJECT_COLORS) + 1})`;
@@ -17,10 +20,12 @@ const uid = () => Math.random().toString(36).slice(2, 10);
 const inDays = (n: number) => {
   const d = new Date();
   d.setDate(d.getDate() + n);
-  return d.toISOString().slice(0, 10);
+  return dateKey(d);
 };
 
+export const DEFAULT_GOALS: StudyGoals = { dailyHours: 2, weeklyHours: 10, weeklyDays: 4 };
 const seed = (): State => ({
+  sessions: [], goals: DEFAULT_GOALS, exams: [],
   subjects: [
     { id: "math", name: "Mathematics", emoji: "📐", color: 0 },
     { id: "bio", name: "Biology", emoji: "🧬", color: 1 },
@@ -39,6 +44,15 @@ const KEY = "study-planner-v1";
 type Ctx = State & {
   addSubject: (name: string, emoji: string) => Subject;
   removeSubject: (id: string) => void;
+  updateSubject: (id: string, changes: Partial<Omit<Subject, "id">>) => void;
+  saveSession: (session: Omit<StudySession, "id">, id?: string) => void;
+  removeSession: (id: string) => void;
+  setGoals: (goals: StudyGoals) => void;
+  saveExam: (exam: Omit<Exam, "id">, id?: string) => void;
+  removeExam: (id: string) => void;
+  addTopic: (examId: string, title: string) => void;
+  updateTopic: (examId: string, topicId: string, status: TopicStatus) => void;
+  removeTopic: (examId: string, topicId: string) => void;
   addAssignment: (a: Omit<Assignment, "id" | "done">) => void;
   toggleAssignment: (id: string) => void;
   removeAssignment: (id: string) => void;
@@ -53,7 +67,10 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) setState(JSON.parse(raw));
+      if (raw) {
+        const saved = JSON.parse(raw);
+        setState({ ...seed(), ...saved, sessions: saved.sessions ?? [], exams: saved.exams ?? [], goals: { ...DEFAULT_GOALS, ...saved.goals } });
+      }
     } catch {}
     setLoaded(true);
   }, []);
@@ -68,8 +85,23 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
       setState((p) => ({ ...p, subjects: [...p.subjects, s] }));
       return s;
     },
+    updateSubject: (id, changes) => setState(p => ({ ...p, subjects: p.subjects.map(s => s.id === id ? { ...s, ...changes } : s) })),
+    saveSession: (session, id) => {
+      if (!state.subjects.some(s => s.id === session.subjectId) || !Number.isFinite(session.minutes) || session.minutes <= 0 || session.date > dateKey()) return;
+      setState(p => ({ ...p, sessions: id ? p.sessions.map(s => s.id === id ? { ...session, id } : s) : [...p.sessions, { ...session, id: uid() }] }));
+    },
+    removeSession: id => setState(p => ({ ...p, sessions: p.sessions.filter(s => s.id !== id) })),
+    setGoals: goals => setState(p => ({ ...p, goals })),
+    saveExam: (exam, id) => setState(p => ({ ...p, exams: id ? p.exams.map(e => e.id === id ? { ...exam, id } : e) : [...p.exams, { ...exam, id: uid() }] })),
+    removeExam: id => setState(p => ({ ...p, exams: p.exams.filter(e => e.id !== id) })),
+    addTopic: (examId, title) => setState(p => ({ ...p, exams: p.exams.map(e => e.id === examId ? { ...e, topics: [...e.topics, { id: uid(), title, status: "not-started" }] } : e) })),
+    updateTopic: (examId, topicId, status) => setState(p => ({ ...p, exams: p.exams.map(e => e.id === examId ? { ...e, topics: e.topics.map(t => t.id === topicId ? { ...t, status } : t) } : e) })),
+    removeTopic: (examId, topicId) => setState(p => ({ ...p, exams: p.exams.map(e => e.id === examId ? { ...e, topics: e.topics.filter(t => t.id !== topicId) } : e) })),
     removeSubject: (id) =>
       setState((p) => ({
+        ...p,
+        sessions: p.sessions.filter(s => s.subjectId !== id),
+        exams: p.exams.filter(e => e.subjectId !== id),
         subjects: p.subjects.filter((s) => s.id !== id),
         assignments: p.assignments.filter((a) => a.subjectId !== id),
       })),
@@ -78,7 +110,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     toggleAssignment: (id) =>
       setState((p) => ({
         ...p,
-        assignments: p.assignments.map((a) => (a.id === id ? { ...a, done: !a.done } : a)),
+        assignments: p.assignments.map((a) => (a.id === id ? { ...a, done: !a.done, completedAt: a.done ? undefined : dateKey() } : a)),
       })),
     removeAssignment: (id) =>
       setState((p) => ({ ...p, assignments: p.assignments.filter((a) => a.id !== id) })),
@@ -98,7 +130,7 @@ export function progressOf(assignments: Assignment[]) {
 }
 
 export function daysUntil(due: string) {
-  const today = new Date(new Date().toISOString().slice(0, 10));
+  const today = new Date(dateKey());
   return Math.round((new Date(due).getTime() - today.getTime()) / 86400000);
 }
 
