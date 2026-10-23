@@ -6,3 +6,5 @@
 - [ ] Exams with dates and revision-topic status
 - [ ] Weekly report and previous-week comparison
 - [ ] Verify saved-data flows, calculations and page layouts
+
+Complete the uploaded Study Space brief using the existing saved-data store; preserve the alien logo, assignments and pastel design.

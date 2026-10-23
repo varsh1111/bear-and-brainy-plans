@@ -1,4 +1,4 @@
-import { dateKey, type StudySession, type StudyGoals, type Exam, type TopicStatus } from "./study";
+import { calendarDaysUntil, dateKey, validStudySession, type StudySession, type StudyGoals, type Exam, type TopicStatus } from "./study";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 export type Subject = { id: string; name: string; emoji: string; color: number; targetHours?: number };
@@ -75,7 +75,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     setLoaded(true);
   }, []);
   useEffect(() => {
-    if (loaded) localStorage.setItem(KEY, JSON.stringify(state));
+    if (loaded) { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* Retain in-memory data if browser storage is unavailable. */ } }
   }, [state, loaded]);
 
   const ctx: Ctx = {
@@ -87,7 +87,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     },
     updateSubject: (id, changes) => setState(p => ({ ...p, subjects: p.subjects.map(s => s.id === id ? { ...s, ...changes } : s) })),
     saveSession: (session, id) => {
-      if (!state.subjects.some(s => s.id === session.subjectId) || !Number.isFinite(session.minutes) || session.minutes <= 0 || session.date > dateKey()) return;
+      if (!state.subjects.some(s => s.id === session.subjectId) || !validStudySession(session)) return;
       setState(p => ({ ...p, sessions: id ? p.sessions.map(s => s.id === id ? { ...session, id } : s) : [...p.sessions, { ...session, id: uid() }] }));
     },
     removeSession: id => setState(p => ({ ...p, sessions: p.sessions.filter(s => s.id !== id) })),
@@ -130,8 +130,7 @@ export function progressOf(assignments: Assignment[]) {
 }
 
 export function daysUntil(due: string) {
-  const today = new Date(dateKey());
-  return Math.round((new Date(due).getTime() - today.getTime()) / 86400000);
+  return calendarDaysUntil(due);
 }
 
 export function dueLabel(due: string) {
