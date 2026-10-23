@@ -1,5 +1,6 @@
 import { calendarDaysUntil, dateKey, validStudySession, type StudySession, type StudyGoals, type Exam, type TopicStatus } from "./study";
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useContext, useEffect, useState, type ReactNode } from "react";
+import { PlannerContext } from './planner-context';
 
 export type Subject = { id: string; name: string; emoji: string; color: number; targetHours?: number | undefined };
 export type Assignment = {
@@ -41,7 +42,7 @@ const seed = (): State => ({
 
 const KEY = "study-planner-v1";
 
-type Ctx = State & {
+export type PlannerContextValue = State & {
   addSubject: (name: string, emoji: string) => Subject;
   removeSubject: (id: string) => void;
   updateSubject: (id: string, changes: Partial<Omit<Subject, "id">>) => void;
@@ -57,8 +58,6 @@ type Ctx = State & {
   toggleAssignment: (id: string) => void;
   removeAssignment: (id: string) => void;
 };
-
-const PlannerCtx = createContext<Ctx | null>(null);
 
 export function PlannerProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State>(seed);
@@ -78,7 +77,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     if (loaded) { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* Retain in-memory data if browser storage is unavailable. */ } }
   }, [state, loaded]);
 
-  const ctx: Ctx = {
+  const ctx: PlannerContextValue = {
     ...state,
     addSubject: (name, emoji) => {
       const s: Subject = { id: uid(), name, emoji: emoji || "📘", color: state.subjects.length };
@@ -115,11 +114,11 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     removeAssignment: (id) =>
       setState((p) => ({ ...p, assignments: p.assignments.filter((a) => a.id !== id) })),
   };
-  return <PlannerCtx.Provider value={ctx}>{children}</PlannerCtx.Provider>;
+  return <PlannerContext.Provider value={ctx}>{children}</PlannerContext.Provider>;
 }
 
 export function usePlanner() {
-  const c = useContext(PlannerCtx);
+  const c = useContext(PlannerContext);
   if (!c) throw new Error("usePlanner outside provider");
   return c;
 }

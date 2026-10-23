@@ -12,3 +12,4 @@
 - Keep all student records in the existing PlannerProvider and `study-planner-v1` browser store to preserve the user's previously chosen account-free experience and saved data.
 - Derive dashboard, subject, calendar and report statistics from shared date and study helpers so session changes update every view consistently.
 - Keep study and exam forms in reusable feature widgets, with leaf routes for sidebar destinations, to avoid duplicate state or navigation-only pages.
+- Define the planner React context in its own unchanged module so hot updates of provider components and helper exports cannot split provider/consumer identity and blank the preview.
