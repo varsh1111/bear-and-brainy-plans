@@ -138,7 +138,7 @@ function RootComponent() {
               <header className="flex h-14 items-center gap-2 border-b px-4">
                 <SidebarTrigger />
                 <span className="text-sm text-muted-foreground">Study Planner</span>
-                <span className="ml-auto text-sm font-medium text-foreground/80">
+                <span className="ml-auto text-base font-extrabold tracking-tight text-foreground">
                   {todayLabel}
                 </span>
               </header>
