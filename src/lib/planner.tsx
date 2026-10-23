@@ -1,7 +1,7 @@
 import { calendarDaysUntil, dateKey, validStudySession, type StudySession, type StudyGoals, type Exam, type TopicStatus } from "./study";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
-export type Subject = { id: string; name: string; emoji: string; color: number; targetHours?: number };
+export type Subject = { id: string; name: string; emoji: string; color: number; targetHours?: number | undefined };
 export type Assignment = {
   id: string;
   subjectId: string;
@@ -9,7 +9,7 @@ export type Assignment = {
   due: string; // yyyy-mm-dd
   done: boolean;
   priority?: "low" | "medium" | "high";
-  completedAt?: string;
+  completedAt?: string | undefined;
 };
 export type State = { subjects: Subject[]; assignments: Assignment[]; sessions: StudySession[]; goals: StudyGoals; exams: Exam[] };
 

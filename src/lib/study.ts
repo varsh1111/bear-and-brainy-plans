@@ -29,7 +29,8 @@ export function streaks(sessions: StudySession[], today = dateKey()) {
   const dates = [...new Set(sessions.filter(s => s.date <= today).map(s => s.date))].sort();
   let longest = 0, run = 0;
   dates.forEach((date, i) => {
-    run = i > 0 && differenceInCalendarDays(parseISO(date), parseISO(dates[i - 1])) === 1 ? run + 1 : 1;
+    const previous = dates[i - 1];
+    run = previous && differenceInCalendarDays(parseISO(date), parseISO(previous)) === 1 ? run + 1 : 1;
     longest = Math.max(longest, run);
   });
   const set = new Set(dates);
