@@ -127,7 +127,7 @@ function RootComponent() {
         <SidebarProvider>
           <div className="flex min-h-screen w-full">
             <AppSidebar />
-            <div className="flex flex-1 flex-col">
+            <div className="flex min-w-0 flex-1 flex-col">
               <header className="flex h-14 items-center gap-2 border-b px-4">
                 <SidebarTrigger />
                 <span className="text-sm text-muted-foreground">Study Planner</span>

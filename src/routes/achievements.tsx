@@ -1,16 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { pageHead } from "@/lib/page-head";
 import { Lock } from "lucide-react";
 import { usePlanner, getAchievements } from "@/lib/planner";
 
 export const Route = createFileRoute("/achievements")({
-  head: () => ({
-    meta: [
-      { title: "Achievements — Study Space Study Planner" },
-      { name: "description", content: "Unlock badges as you complete assignments and stay motivated." },
-      { property: "og:title", content: "Achievements — Study Space Study Planner" },
-      { property: "og:description", content: "Unlock badges as you complete assignments and stay motivated." },
-    ],
-  }),
+  head: () => pageHead('Achievements', 'Celebrate completed assignments and unlock your Study Space badges.'),
   component: Achievements,
 });
 

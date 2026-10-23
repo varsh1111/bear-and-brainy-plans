@@ -1,6 +1,6 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import logo from "@/assets/logo.png";
-import { LayoutDashboard, Trophy, Plus } from "lucide-react";
+import { LayoutDashboard, Trophy, Plus, ListTodo, ChartNoAxesCombined, CalendarDays, GraduationCap, FileChartColumn } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarHeader, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, useSidebar,
@@ -33,6 +33,7 @@ export function AppSidebar() {
                   <Link to="/"><LayoutDashboard /><span>Dashboard</span></Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              {([{ to: '/assignments', label: 'Assignment Tracker', icon: ListTodo }, { to: '/progress', label: 'My Progress', icon: ChartNoAxesCombined }, { to: '/calendar', label: 'Study Calendar', icon: CalendarDays }, { to: '/exams', label: 'Exam Tracker', icon: GraduationCap }, { to: '/report', label: 'Weekly Report', icon: FileChartColumn }] as const).map(item => <SidebarMenuItem key={item.to}><SidebarMenuButton asChild isActive={path === item.to} tooltip={item.label}><Link to={item.to}><item.icon /><span>{item.label}</span></Link></SidebarMenuButton></SidebarMenuItem>)}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild isActive={path === "/achievements"} tooltip="Achievements">
                   <Link to="/achievements"><Trophy /><span>Achievements</span></Link>
