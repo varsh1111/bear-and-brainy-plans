@@ -16,6 +16,13 @@ import { PlannerProvider } from "@/lib/planner";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
+const todayLabel = new Intl.DateTimeFormat("en-US", {
+  weekday: "long",
+  month: "long",
+  day: "numeric",
+  year: "numeric",
+}).format(new Date());
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -131,6 +138,9 @@ function RootComponent() {
               <header className="flex h-14 items-center gap-2 border-b px-4">
                 <SidebarTrigger />
                 <span className="text-sm text-muted-foreground">Study Planner</span>
+                <span className="ml-auto text-sm font-medium text-foreground/80">
+                  {todayLabel}
+                </span>
               </header>
               <main className="mx-auto w-full max-w-6xl flex-1 p-6 md:p-8">
                 <Outlet />
