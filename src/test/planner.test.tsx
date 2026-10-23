@@ -1,0 +1,18 @@
+import { act, cleanup, render, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { PlannerProvider, usePlanner } from '@/lib/planner';
+import { dateKey } from '@/lib/study';
+
+let planner: ReturnType<typeof usePlanner> | undefined;
+function Probe() { planner = usePlanner(); return null; }
+function current() { if (!planner) throw new Error('Provider not mounted'); return planner; }
+const legacy = { subjects: [{ id: 'saved', name: 'University subject', emoji: '📚', color: 2 }], assignments: [{ id: 'task', subjectId: 'saved', title: 'Saved essay', due: '2026-10-30', done: true }] };
+beforeEach(() => { localStorage.clear(); localStorage.setItem('study-planner-v1', JSON.stringify(legacy)); });
+afterEach(() => { cleanup(); planner = undefined; localStorage.clear(); });
+describe('Student saved data', () => {
+  it('preserves legacy subjects and completed assignments when new tracking fields load', async () => { render(<PlannerProvider><Probe /></PlannerProvider>); await waitFor(() => expect(current().subjects).toEqual(legacy.subjects)); expect(current().assignments).toEqual(legacy.assignments); expect(current().sessions).toEqual([]); expect(current().goals.dailyHours).toBe(2); });
+  it('saves added, edited and deleted sessions across remounts', async () => { const view = render(<PlannerProvider><Probe /></PlannerProvider>); act(() => current().saveSession({ subjectId: 'saved', date: dateKey(), minutes: 120, notes: 'Revision' })); const id = current().sessions[0]?.id; expect(id).toBeDefined(); act(() => current().saveSession({ subjectId: 'saved', date: dateKey(), minutes: 90, notes: 'Edited' }, id)); view.unmount(); render(<PlannerProvider><Probe /></PlannerProvider>); await waitFor(() => expect(current().sessions[0]?.minutes).toBe(90)); expect(current().sessions[0]?.notes).toBe('Edited'); if (!id) throw new Error('Missing session'); act(() => current().removeSession(id)); expect(JSON.parse(localStorage.getItem('study-planner-v1') ?? '{}').sessions).toEqual([]); });
+  it('records completion date without inventing one for old completed assignments', () => { render(<PlannerProvider><Probe /></PlannerProvider>); expect(current().assignments[0]?.completedAt).toBeUndefined(); act(() => current().toggleAssignment('task')); act(() => current().toggleAssignment('task')); expect(current().assignments[0]?.completedAt).toBe(dateKey()); });
+  it('shares saved goals and subject targets', () => { render(<PlannerProvider><Probe /></PlannerProvider>); act(() => current().setGoals({ dailyHours: 2, weeklyHours: 8, weeklyDays: 4 })); act(() => current().updateSubject('saved', { targetHours: 20 })); const saved = JSON.parse(localStorage.getItem('study-planner-v1') ?? '{}'); expect(saved.goals).toEqual({ dailyHours: 2, weeklyHours: 8, weeklyDays: 4 }); expect(saved.subjects[0].targetHours).toBe(20); });
+  it('retains revision topic statuses when an exam is edited', () => { render(<PlannerProvider><Probe /></PlannerProvider>); act(() => current().saveExam({ subjectId: 'saved', title: 'Final', date: '2026-11-01', topics: [] })); const exam = current().exams[0]; if (!exam) throw new Error('Missing exam'); act(() => current().addTopic(exam.id, 'Cells')); const topic = current().exams[0]?.topics[0]; if (!topic) throw new Error('Missing topic'); act(() => current().updateTopic(exam.id, topic.id, 'confident')); const updated = current().exams[0]; if (!updated) throw new Error('Missing exam'); act(() => current().saveExam({ ...updated, date: '2026-11-02' }, updated.id)); expect(current().exams[0]?.topics[0]?.status).toBe('confident'); });
+});

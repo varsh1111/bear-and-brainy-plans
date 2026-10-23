@@ -1,4 +1,4 @@
-import { addDays, differenceInCalendarDays, format, parseISO, startOfWeek } from 'date-fns';
+import { addDays, differenceInCalendarDays, format, isValid, parseISO, startOfWeek } from 'date-fns';
 
 export type StudySession = { id: string; subjectId: string; date: string; minutes: number; notes: string };
 export type StudyGoals = { dailyHours: number; weeklyHours: number; weeklyDays: number };
@@ -17,6 +17,8 @@ export const hoursLabel = (n: number) => `${Number(n.toFixed(2))}h`;
 export const studyDays = (sessions: StudySession[]) => new Set(sessions.map(s => s.date)).size;
 export const inPeriod = (sessions: StudySession[], from: string, to: string) => sessions.filter(s => s.date >= from && s.date <= to);
 export const goalPercent = (actual: number, target: number) => target > 0 ? Math.min(100, Math.round(actual / target * 100)) : 0;
+export const validStudySession = (session: Omit<StudySession, 'id'>, today = dateKey()) => /^\d{4}-\d{2}-\d{2}$/.test(session.date) && isValid(parseISO(session.date)) && session.date <= today && Number.isFinite(session.minutes) && session.minutes > 0 && session.minutes <= 1440;
+export const calendarDaysUntil = (date: string, today = dateKey()) => differenceInCalendarDays(parseISO(date), parseISO(today));
 export function weekSummary(sessions: StudySession[], date = dateKey()) {
   const start = weekStart(date);
   const current = inPeriod(sessions, start, shiftDate(start, 6));
@@ -27,7 +29,8 @@ export function streaks(sessions: StudySession[], today = dateKey()) {
   const dates = [...new Set(sessions.filter(s => s.date <= today).map(s => s.date))].sort();
   let longest = 0, run = 0;
   dates.forEach((date, i) => {
-    run = i > 0 && differenceInCalendarDays(parseISO(date), parseISO(dates[i - 1])) === 1 ? run + 1 : 1;
+    const previous = dates[i - 1];
+    run = previous && differenceInCalendarDays(parseISO(date), parseISO(previous)) === 1 ? run + 1 : 1;
     longest = Math.max(longest, run);
   });
   const set = new Set(dates);

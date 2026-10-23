@@ -3,35 +3,33 @@ import { Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePlanner, progressOf, subjectColor } from "@/lib/planner";
 import { AssignmentRow, AddAssignmentForm } from "@/components/AssignmentList";
+import { EditSubjectDialog } from "@/components/EditSubjectDialog";
+import { SubjectStudyProgress, SessionDialog, SessionList, DailyChart } from "@/components/StudyWidgets";
+import { weekSummary } from "@/lib/study";
+import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/subjects/$id")({
-  head: () => ({
-    meta: [
-      { title: "Subject — Study Space Study Planner" },
-      { name: "description", content: "Manage assignments and track progress for this subject." },
-      { property: "og:title", content: "Subject — Study Space Study Planner" },
-      { property: "og:description", content: "Manage assignments and track progress for this subject." },
-    ],
-  }),
+  head: () => pageHead('Subject progress', 'Manage subject assignments, study targets and saved study sessions.'),
   component: SubjectPage,
 });
 
 function SubjectPage() {
   const { id } = Route.useParams();
-  const { subjects, assignments, removeSubject } = usePlanner();
+  const { subjects, assignments, sessions, removeSubject } = usePlanner();
   const nav = useNavigate();
   const s = subjects.find((x) => x.id === id);
   if (!s) return <p className="text-muted-foreground">Subject not found. <Link to="/" className="underline">Back to dashboard</Link></p>;
 
   const list = assignments.filter((a) => a.subjectId === id).sort((a, b) => Number(a.done) - Number(b.done) || a.due.localeCompare(b.due));
   const p = progressOf(list);
+  const week = weekSummary(sessions.filter(x => x.subjectId === id));
 
   return (
     <div className="space-y-8">
-      <section className="flex flex-wrap items-center gap-6 rounded-3xl border bg-card p-8 shadow-soft">
+      <section className="flex flex-wrap items-center gap-6 border-b pb-8">
         <div className="grid size-20 place-items-center rounded-2xl text-4xl" style={{ background: `color-mix(in oklab, ${subjectColor(s.color)} 20%, transparent)` }}>{s.emoji}</div>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold">{s.name}</h1>
+        <div className="min-w-0 flex-1">
+          <h1 className="break-words text-3xl font-bold">{s.name}</h1>
           <p className="text-muted-foreground">{list.filter((a) => a.done).length} of {list.length} tasks done</p>
           <div className="mt-3 h-3 max-w-sm overflow-hidden rounded-full bg-muted">
             <div className="h-full rounded-full transition-all" style={{ width: `${p}%`, background: subjectColor(s.color) }} />
@@ -40,6 +38,8 @@ function SubjectPage() {
         <div className="font-display text-5xl font-bold" style={{ color: subjectColor(s.color) }}>{p}%</div>
       </section>
 
+      <div className="flex flex-wrap gap-3"><EditSubjectDialog subject={s} /><SessionDialog subjectId={id} /></div>
+      <div className="grid gap-8 md:grid-cols-2"><section className="space-y-4"><h2 className="text-xl font-bold">Study progress</h2><SubjectStudyProgress subjectId={id} /></section><section className="space-y-4"><h2 className="text-xl font-bold">This week</h2><DailyChart sessions={week.current} start={week.start} /></section></div>
       <section className="space-y-4">
         <h2 className="text-xl font-bold">Assignments & deadlines</h2>
         <AddAssignmentForm subjectId={id} />
@@ -49,7 +49,8 @@ function SubjectPage() {
         </div>
       </section>
 
-      <Button variant="ghost" className="text-destructive" onClick={() => { if (confirm(`Delete ${s.name} and its assignments?`)) { removeSubject(id); nav({ to: "/" }); } }}>
+      <section className="space-y-4"><h2 className="text-xl font-bold">Study sessions</h2><SessionList subjectId={id} /></section>
+      <Button variant="ghost" className="text-destructive" onClick={() => { if (confirm(`Delete ${s.name} and all its assignments, study sessions and exams?`)) { removeSubject(id); nav({ to: "/" }); } }}>
         <Trash2 />Delete subject
       </Button>
     </div>

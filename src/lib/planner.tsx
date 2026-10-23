@@ -1,7 +1,8 @@
-import { dateKey, type StudySession, type StudyGoals, type Exam, type TopicStatus } from "./study";
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { calendarDaysUntil, dateKey, validStudySession, type StudySession, type StudyGoals, type Exam, type TopicStatus } from "./study";
+import { useContext, useEffect, useState, type ReactNode } from "react";
+import { PlannerContext } from './planner-context';
 
-export type Subject = { id: string; name: string; emoji: string; color: number; targetHours?: number };
+export type Subject = { id: string; name: string; emoji: string; color: number; targetHours?: number | undefined };
 export type Assignment = {
   id: string;
   subjectId: string;
@@ -9,7 +10,7 @@ export type Assignment = {
   due: string; // yyyy-mm-dd
   done: boolean;
   priority?: "low" | "medium" | "high";
-  completedAt?: string;
+  completedAt?: string | undefined;
 };
 export type State = { subjects: Subject[]; assignments: Assignment[]; sessions: StudySession[]; goals: StudyGoals; exams: Exam[] };
 
@@ -41,7 +42,7 @@ const seed = (): State => ({
 
 const KEY = "study-planner-v1";
 
-type Ctx = State & {
+export type PlannerContextValue = State & {
   addSubject: (name: string, emoji: string) => Subject;
   removeSubject: (id: string) => void;
   updateSubject: (id: string, changes: Partial<Omit<Subject, "id">>) => void;
@@ -58,8 +59,6 @@ type Ctx = State & {
   removeAssignment: (id: string) => void;
 };
 
-const PlannerCtx = createContext<Ctx | null>(null);
-
 export function PlannerProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State>(seed);
   const [loaded, setLoaded] = useState(false);
@@ -75,10 +74,10 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     setLoaded(true);
   }, []);
   useEffect(() => {
-    if (loaded) localStorage.setItem(KEY, JSON.stringify(state));
+    if (loaded) { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch { /* Retain in-memory data if browser storage is unavailable. */ } }
   }, [state, loaded]);
 
-  const ctx: Ctx = {
+  const ctx: PlannerContextValue = {
     ...state,
     addSubject: (name, emoji) => {
       const s: Subject = { id: uid(), name, emoji: emoji || "📘", color: state.subjects.length };
@@ -87,7 +86,7 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     },
     updateSubject: (id, changes) => setState(p => ({ ...p, subjects: p.subjects.map(s => s.id === id ? { ...s, ...changes } : s) })),
     saveSession: (session, id) => {
-      if (!state.subjects.some(s => s.id === session.subjectId) || !Number.isFinite(session.minutes) || session.minutes <= 0 || session.date > dateKey()) return;
+      if (!state.subjects.some(s => s.id === session.subjectId) || !validStudySession(session)) return;
       setState(p => ({ ...p, sessions: id ? p.sessions.map(s => s.id === id ? { ...session, id } : s) : [...p.sessions, { ...session, id: uid() }] }));
     },
     removeSession: id => setState(p => ({ ...p, sessions: p.sessions.filter(s => s.id !== id) })),
@@ -115,11 +114,11 @@ export function PlannerProvider({ children }: { children: ReactNode }) {
     removeAssignment: (id) =>
       setState((p) => ({ ...p, assignments: p.assignments.filter((a) => a.id !== id) })),
   };
-  return <PlannerCtx.Provider value={ctx}>{children}</PlannerCtx.Provider>;
+  return <PlannerContext.Provider value={ctx}>{children}</PlannerContext.Provider>;
 }
 
 export function usePlanner() {
-  const c = useContext(PlannerCtx);
+  const c = useContext(PlannerContext);
   if (!c) throw new Error("usePlanner outside provider");
   return c;
 }
@@ -130,8 +129,7 @@ export function progressOf(assignments: Assignment[]) {
 }
 
 export function daysUntil(due: string) {
-  const today = new Date(dateKey());
-  return Math.round((new Date(due).getTime() - today.getTime()) / 86400000);
+  return calendarDaysUntil(due);
 }
 
 export function dueLabel(due: string) {
