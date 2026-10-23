@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AchievementsRouteImport } from './routes/achievements'
+import { Route as AssignmentsRouteImport } from './routes/assignments'
 import { Route as CalendarRouteImport } from './routes/calendar'
+import { Route as ExamsRouteImport } from './routes/exams'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as SubjectsIdRouteImport } from './routes/subjects.$id'
@@ -26,9 +28,19 @@ const AchievementsRoute = AchievementsRouteImport.update({
   path: '/achievements',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AssignmentsRoute = AssignmentsRouteImport.update({
+  id: '/assignments',
+  path: '/assignments',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CalendarRoute = CalendarRouteImport.update({
   id: '/calendar',
   path: '/calendar',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExamsRoute = ExamsRouteImport.update({
+  id: '/exams',
+  path: '/exams',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProgressRoute = ProgressRouteImport.update({
@@ -50,7 +62,9 @@ const SubjectsIdRoute = SubjectsIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/achievements': typeof AchievementsRoute
+  '/assignments': typeof AssignmentsRoute
   '/calendar': typeof CalendarRoute
+  '/exams': typeof ExamsRoute
   '/progress': typeof ProgressRoute
   '/report': typeof ReportRoute
   '/subjects/$id': typeof SubjectsIdRoute
@@ -58,7 +72,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/achievements': typeof AchievementsRoute
+  '/assignments': typeof AssignmentsRoute
   '/calendar': typeof CalendarRoute
+  '/exams': typeof ExamsRoute
   '/progress': typeof ProgressRoute
   '/report': typeof ReportRoute
   '/subjects/$id': typeof SubjectsIdRoute
@@ -67,7 +83,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/achievements': typeof AchievementsRoute
+  '/assignments': typeof AssignmentsRoute
   '/calendar': typeof CalendarRoute
+  '/exams': typeof ExamsRoute
   '/progress': typeof ProgressRoute
   '/report': typeof ReportRoute
   '/subjects/$id': typeof SubjectsIdRoute
@@ -77,7 +95,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/achievements'
+    | '/assignments'
     | '/calendar'
+    | '/exams'
     | '/progress'
     | '/report'
     | '/subjects/$id'
@@ -85,7 +105,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/achievements'
+    | '/assignments'
     | '/calendar'
+    | '/exams'
     | '/progress'
     | '/report'
     | '/subjects/$id'
@@ -93,7 +115,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/achievements'
+    | '/assignments'
     | '/calendar'
+    | '/exams'
     | '/progress'
     | '/report'
     | '/subjects/$id'
@@ -102,7 +126,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AchievementsRoute: typeof AchievementsRoute
+  AssignmentsRoute: typeof AssignmentsRoute
   CalendarRoute: typeof CalendarRoute
+  ExamsRoute: typeof ExamsRoute
   ProgressRoute: typeof ProgressRoute
   ReportRoute: typeof ReportRoute
   SubjectsIdRoute: typeof SubjectsIdRoute
@@ -124,11 +150,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AchievementsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/assignments': {
+      id: '/assignments'
+      path: '/assignments'
+      fullPath: '/assignments'
+      preLoaderRoute: typeof AssignmentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/calendar': {
       id: '/calendar'
       path: '/calendar'
       fullPath: '/calendar'
       preLoaderRoute: typeof CalendarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/exams': {
+      id: '/exams'
+      path: '/exams'
+      fullPath: '/exams'
+      preLoaderRoute: typeof ExamsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/progress': {
@@ -158,7 +198,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AchievementsRoute: AchievementsRoute,
+  AssignmentsRoute: AssignmentsRoute,
   CalendarRoute: CalendarRoute,
+  ExamsRoute: ExamsRoute,
   ProgressRoute: ProgressRoute,
   ReportRoute: ReportRoute,
   SubjectsIdRoute: SubjectsIdRoute,
