@@ -61,7 +61,7 @@ export function AddAssignmentForm({ subjectId }: { subjectId?: string }) {
           </SelectContent>
         </Select>
       )}
-      <Select value={priority} onValueChange={v => { if (v === "low" || v === "medium" || v === "high") setPriority(v); }}><SelectTrigger className="w-36" aria-label="Assignment priority"><SelectValue /></SelectTrigger><SelectContent>{(["low", "medium", "high"] as const).map(p => <SelectItem key={p} value={p}>{p[0].toUpperCase() + p.slice(1)} priority</SelectItem>)}</SelectContent></Select>
+      <Select value={priority} onValueChange={v => { if (v === "low" || v === "medium" || v === "high") setPriority(v); }}><SelectTrigger className="w-36" aria-label="Assignment priority"><SelectValue /></SelectTrigger><SelectContent>{(["low", "medium", "high"] as const).map(p => <SelectItem key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)} priority</SelectItem>)}</SelectContent></Select>
       <Input required aria-label="Assignment deadline" type="date" className="w-40" value={due} onChange={(e) => setDue(e.target.value)} />
       <Button type="submit" disabled={!title.trim() || !target}><Plus />Add</Button>
     </form>
